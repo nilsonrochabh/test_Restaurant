@@ -4,17 +4,30 @@
 {% block content %} 
 <div class="col-md-6 offset-md-3">
     <h2 class="text-center mb-4">Login</h2>
-    <!-- Botão Google -->
+    
+    <!-- Botão Google (URL CORRETA) -->
     <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-outline-dark w-100 mb-3 py-2">
-    <i class="fab fa-google me-2"></i>
+        <i class="fab fa-google me-2"></i>
         Continuar com Google
     </a>
+    
+    <div class="text-center mb-3">
+        <span class="text-muted">— OU —</span>
+    </div>
+    
+    <!-- Formulário normal -->
     <form method="post">  
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
+    
     <hr>
-    <p class="text-center">Já tem uma conta? <a href="#register">criar conta</a></p> 
+    <p class="text-center">Não tem uma conta? 
+        <a href="{% url 'register' %}">Criar conta</a>
+    </p> 
+    {% comment %} <p class="text-center">
+        <a href="{% url 'password_reset' %}">Esqueceu a senha?</a>
+    </p> {% endcomment %}
 </div>
 {% endblock %}

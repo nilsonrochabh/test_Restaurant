@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
-
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
 STATIC_DIR=os.path.join(BASE_DIR,'static')
+
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,10 +45,12 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'social_django',
+
     'myapp',
 ]
 
 MIDDLEWARE = [
+    'social_django.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -149,9 +153,20 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# URLs
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+
+
 # Google OAuth2 (use variáveis de ambiente)
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_OAUTH2_KEY','')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('GOOGLE_OAUTH2_SECRET','')
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/complete-profile/'
 
 # Configurações adicionais
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
