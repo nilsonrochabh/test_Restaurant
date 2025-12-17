@@ -38,6 +38,83 @@ class Table(models.Model):
         return f'Mesa {self.number} - {self.restaurant.name}'
 
 
+class Categoria(models.Model):
+    nome = models.CharField(max_length=100)
+    descricao = models.TextField(blank=True)
+    ordem = models.IntegerField(default=0)  # Para ordenar no menu
+    
+    class Meta:
+        verbose_name = 'Categoria'
+        verbose_name_plural = 'Categorias'
+        ordering = ['ordem', 'nome']
+    
+    def __str__(self):
+        return self.nome
+
+class Produto(models.Model):
+    UNIDADE_CHOICES = [
+        ('UN', 'Unidade'),
+        ('KG', 'Quilograma'),
+        ('LT', 'Litro'),
+        ('CX', 'Caixa'),
+        ('PC', 'Pacote'),
+        ('SC', 'Saco'),
+    ]
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, verbose_name='Restaurante')
+    nome = models.CharField(max_length=200)
+    descricao = models.TextField(blank=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT)
+    unidade_medida = models.CharField(max_length=2, choices=UNIDADE_CHOICES)
+    quantidade_estoque = models.DecimalField(max_digits=10, decimal_places=3, default=0)
+    quantidade_minima = models.DecimalField(max_digits=10, decimal_places=3, default=1)
+    preco_custo = models.DecimalField(max_digits=10, decimal_places=2)
+    preco_venda = models.DecimalField(max_digits=10, decimal_places=2)
+    codigo_barras = models.CharField(max_length=50, blank=True, unique=True)
+    ativo = models.BooleanField(default=True)
+    data_cadastro = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Produto'
+        verbose_name_plural = 'Produtos'
+        ordering = ['categoria', 'nome']
+    
+    def __str__(self):
+        return f"{self.nome} ({self.categoria})"
+    
+    @property
+    def situacao_estoque(self):
+        """Verifica se estoque está baixo"""
+        if self.quantidade_estoque <= 0:
+            return 'ESGOTADO'
+        elif self.quantidade_estoque <= self.quantidade_minima:
+            return 'BAIXO'
+        return 'NORMAL'
+    
+    @property
+    def margem_lucro(self):
+        """Calcula margem de lucro"""
+        if self.preco_custo > 0:
+            return round(((self.preco_venda - self.preco_custo) / self.preco_custo) * 100, 2)
+        return 0
+
+class MovimentacaoEstoque(models.Model):
+    TIPO_CHOICES = [
+        ('E', 'Entrada'),
+        ('S', 'Saída'),
+    ]
+    
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    tipo = models.CharField(max_length=1, choices=TIPO_CHOICES)
+    quantidade = models.DecimalField(max_digits=10, decimal_places=3)
+    observacao = models.TextField(blank=True)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    data_movimentacao = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Movimentação de Estoque'
+        verbose_name_plural = 'Movimentações de Estoque'
+        ordering = ['-data_movimentacao']
 # Cardápio e Itens do Cardápio (vinculado a restaurantes)
 class MenuItem(models.Model):
     CATEGORY_CHOICES = [

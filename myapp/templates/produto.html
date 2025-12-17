@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Produto{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %} 
+
+
+<div class="col-md-6 offset-md-3">
+    <h2 class="text-center mb-4">Criar Produto</h2>
+<form method="post" enctype="multipart/form-data">  
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+    <hr>
+    <p class="text-center"><a href="{% url 'produto_list' %}">Voltar à lista de produtos</a></p>
+</div>
+{% endblock %}

@@ -13,7 +13,7 @@
 # admin.site.register(OrderItem)
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Restaurant, Table, MenuItem, Reservation, Order, OrderItem
+from .models import Restaurant, Table, MenuItem, Reservation, Order, OrderItem, Categoria, Produto
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
@@ -27,6 +27,18 @@ class TableAdmin(admin.ModelAdmin):
     list_display = ['restaurant', 'number', 'capacity']
     list_filter = ['restaurant', 'capacity']
     search_fields = ['restaurant__name']
+
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ['nome', 'ordem']
+    search_fields = ['nome']
+    list_editable = ['ordem']   
+@admin.register(Produto)
+class ProdutoAdmin(admin.ModelAdmin):
+    list_display = ['nome', 'restaurant', 'categoria', 'unidade_medida', 'preco_custo', 'preco_venda', 'quantidade_estoque', 'quantidade_minima']
+    list_filter = ['categoria', 'restaurant']
+    search_fields = ['nome', 'descricao']
+    list_editable = ['preco_custo', 'preco_venda', 'quantidade_estoque', 'quantidade_minima']
 
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
