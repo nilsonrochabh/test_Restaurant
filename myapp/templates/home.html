@@ -11,7 +11,7 @@
             <i class="fas fa-plus-circle"></i> Cadastrar Restaurante
         </a>
     {% else %}
-        <a href="#register" class="btn btn-primary btn-lg mt-3">
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg mt-3">
             <i class="fas fa-rocket"></i> Começar Agora
         </a>
     {% endif %}
